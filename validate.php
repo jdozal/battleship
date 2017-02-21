@@ -98,7 +98,11 @@ for($i = 0; $i <= count ( $shipInformation [$i] ); $i ++) {
 	$y = $shipInformation [$i] [2] - 1;
 	$shipSize = $ships[$shipInformation [$i][0]][0];
 	$shipID = $ships[$shipInformation [$i][0]][1];
-	
+	// check if position is outside of board
+	if($x >= 10|| $x < 0 || $y >= 10 || $y < 0) {
+		$reasons [] = "Invalid ship position";
+		break;
+	}
 	// placing ships
 	if(strcasecmp($shipInformation[$i][3], "true") == 0){
 		// if horizontal position check y to check if ship will be inside of board
