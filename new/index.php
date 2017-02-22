@@ -1,11 +1,26 @@
 <?php
 // array of ships ['name'] => [$size, $ID]
 $ships = array (
-		'Aircraft carrier' => [5,1],
-		'Battleship' => [4,2],
-		'Frigate' => [3,3],
-		'Submarine' => [3,4],
-		'Minesweeper' => [2,5] 
+		'Aircraft carrier' => [ 
+				5,
+				1 
+		],
+		'Battleship' => [ 
+				4,
+				2 
+		],
+		'Frigate' => [ 
+				3,
+				3 
+		],
+		'Submarine' => [ 
+				3,
+				4 
+		],
+		'Minesweeper' => [ 
+				2,
+				5 
+		] 
 );
 
 $strategies = array (
@@ -29,13 +44,13 @@ class InvalidResponse {
 		$this->response = $response;
 	}
 }
-// ?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,%20true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
+// http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Random&ships=Aircraft+carrier,6,3,true;Battleship,3,1,true;Frigate,2,4,false;Submarine,6,6,true;Minesweeper,3,9,true
 
-// $strategy = $_GET['strategy'];
-// $deployment = $_GET['ships'];
-$valid  = True;
-$strategy = "Smart";
-$deployment = "Aircraft carrier,1,6,true;Battleship,7,5,false;Frigate,2,1,true;Submarine,9,6,true;Minesweeper,10,9,true";
+$strategy = $_GET ['strategy'];
+$deployment = $_GET ['ships'];
+$valid = True;
+// $strategy = "Random";
+// $deployment = "Aircraft carrier,6,3,true;Battleship,3,1,true;Frigate,2,4,false;Submarine,6,6,true;Minesweeper,3,9,true";
 $reasons = [ ];
 $shipInformation = [ ];
 $shipLoc = explode ( ";", $deployment );
@@ -94,56 +109,54 @@ for($i = 0; $i < 10; $i ++) {
 }
 
 for($i = 0; $i <= count ( $shipInformation [$i] ); $i ++) {
-	$x = $shipInformation [$i] [1] - 1;
-	$y = $shipInformation [$i] [2] - 1;
-	$shipSize = $ships[$shipInformation [$i][0]][0];
-	$shipID = $ships[$shipInformation [$i][0]][1];
+	$y = $shipInformation [$i] [1] - 1;
+	$x = $shipInformation [$i] [2] - 1;
+	$shipSize = $ships [$shipInformation [$i] [0]] [0];
+	$shipID = $ships [$shipInformation [$i] [0]] [1];
 	// check if position is outside of board
-	if($x >= 10|| $x < 0 || $y >= 10 || $y < 0) {
+	if ($x >= 10 || $x < 0 || $y >= 10 || $y < 0) {
 		$reasons [] = "Invalid ship position";
 		break;
 	}
 	// placing ships
-	if(strcasecmp($shipInformation[$i][3], "true") == 0){
+	if (strcasecmp ( $shipInformation [$i] [3], "true" ) == 0) {
 		// if horizontal position check y to check if ship will be inside of board
-		if($y + $shipSize > 10){
+		if ($y + $shipSize > 10) {
 			$reasons [] = "Invalid ship direction";
 			continue;
 		}
-		for($j = 0; $j < $shipSize; $j++) {
+		for($j = 0; $j < $shipSize; $j ++) {
 			// check if there is a ship there already
-			if($board[$x][$y+$j] > 0) {
+			if ($board [$x] [$y + $j] > 0) {
 				$reasons [] = "Conflicting ship deployments";
 				break;
 			}
-			$board[$x][$y+$j] = $shipID;
+			$board [$x] [$y + $j] = $shipID;
 		}
-	}else{
-		// if vertical position check x  if ship will be inside of board
-		if($x + $shipSize > 10) {
+	} else {
+		// if vertical position check x if ship will be inside of board
+		if ($x + $shipSize > 10) {
 			$reasons [] = "Invalid ship direction";
 			continue;
 		}
-		for($j = 0; $j < $shipSize; $j++) {
+		for($j = 0; $j < $shipSize; $j ++) {
 			// check if there is a ship there already
-			if($board[$x+$j][$y] > 0) {
+			if ($board [$x + $j] [$y] > 0) {
 				$reasons [] = "Conflicting ship deployments";
 				break;
 			}
-			$board[$x+$j][$y] = $shipID;
+			$board [$x + $j] [$y] = $shipID;
 		}
-		
 	}
-	
 }
 
-echo "BOARD\n";
-foreach ( $board as $line ) {
-	foreach ( $line as $place ) {
-		echo $place;
-	}
-	echo "\n";
-}
+// echo "BOARD\n";
+// foreach ( $board as $line ) {
+// 	foreach ( $line as $place ) {
+// 		echo $place;
+// 	}
+// 	echo "\n";
+// }
 
 if (empty ( $reasons )) {
 	$identifier = uniqid ();
@@ -151,7 +164,7 @@ if (empty ( $reasons )) {
 } else {
 	$response = new InvalidResponse ( false, implode ( ", ", $reasons ) );
 }
-echo json_encode ( $response );
-echo $response;
+$responseJSON = json_encode($response);
+echo $responseJSON;
 
 ?>
