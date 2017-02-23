@@ -1,5 +1,5 @@
 <?php
-require_once 'common.php';
+require_once '../common/common.php';
 // require_once 'Board.php';
 class Validate {
 	public $strategies = array (
@@ -158,8 +158,8 @@ class Validate {
 	}
 }
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
-// $strategy = $_GET ['strategy'];
-// $deployment = $_GET ['ships'];
+ $strategy = $_GET ['strategy'];
+ $deployment = $_GET ['ships'];
 $valid = True;
 $strategy = "Random";
 $deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
