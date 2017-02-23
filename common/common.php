@@ -24,8 +24,8 @@ class Ship {
 				return 3;
 			case ("Minesweeper") :
 				return 2;
-			default:
-				return -1;
+			default :
+				return - 1;
 		endswitch
 		;
 	}
@@ -49,7 +49,53 @@ class Ship {
 			echo "\n";
 		}
 	}
-	public function deploy() {
+
+}
+class Board {
+	public $gridSize;
+	public $grid = [];
+	public $shipList = array ();
+	public function __construct($gridSize) {
+		$this->gridSize = $gridSize;
+		for($i = 0; $i < $gridSize; $i ++) {
+			$this->grid [] = array (
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0
+			);
+		}
+	}
+
+	public function printGrid(){
+		echo "BOARD\n";
+		foreach ( $this->grid as $line ) {
+			foreach ( $line as $place ) {
+				echo $place;
+			}
+			echo "\n";
+		}
+	}
+	public function addShip($ship) {
+		array_push ( $this->shipList, $ship );
+		
+		
+	}
+
+	
+	// check whether the given (x,y) is occupied by a ship
+	public function isOccupied($x, $y) {
+		if ($this->grid [$x] [$y])
+			return true;
+		else {
+			return false;
+		}
 	}
 }
 ?>
