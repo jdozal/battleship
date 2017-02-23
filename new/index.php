@@ -29,8 +29,10 @@ class Validate {
 	public function checkStrategy() {
 		if (empty ( $this->strategy )) {
 			$this->reasons [] = 'Strategy not specified';
+			$this->valid = false;
 		} else if (! in_array ( $this->strategy, $this->strategies )) {
 			$this->reasons [] = 'Unknown strategy';
+			$this->valid = false;
 		}
 	}
 	public function checkDeployment() {
@@ -43,6 +45,11 @@ class Validate {
 		
 		// Check if array of deployments is well formed
 		for($i = 0; $i < count ( $this->shipInformation [$i] ); $i ++) {
+			if (count ( $this->shipInformation [$i] ) != 4) {
+				$this->reasons [] = 'Ship deployment not well-formed';
+				$this->valid = false;
+				continue;
+			}
 			if (is_numeric ( $this->shipInformation [$i] [0] )) {
 				$this->reasons [] = 'Ship deployment not well-formed';
 				$this->valid = false;
@@ -55,67 +62,82 @@ class Validate {
 				$this->reasons [] = 'Ship deployment not well-formed';
 				$this->valid = false;
 			}
-			if (is_string ( $this->shipInformation [$i] [3] )) { // FIXME: CHECK IF BOOLEAN
+			if (is_string ( $this->shipInformation [$i] [3] )) {
 				if (($this->shipInformation [$i] [3] != "true") && ($this->shipInformation [$i] [3] != "false")) {
 					$this->reasons [] = 'Ship deployment not well-formed';
+					$this->reasons [] = 'Invalid ship direction';
 					$this->valid = false;
 				}
 			}
 		}
 	}
-	public function startBoard() {
+	public function createBoard() {
+		// Creating instance of Board with size 10
 		$this->board = new Board ( 10 );
 		
-		// Check if ship name is in list
-		for($i = 0; $i < count ( $this->shipInformation ); $i ++) {
-			$currShip = new Ship ( $this->shipInformation [$i] [0], $this->shipInformation [$i] [1], $this->shipInformation [$i] [2], $this->shipInformation [$i] [3] );
-			$this->shipArray [] = $currShip;
+		// Traverse array that contains ship information
+		foreach ( $this->shipInformation as $boat ) {
+			$currShip = new Ship ( $boat [0], $boat [1], $boat [2], $boat [3] );
 			// Checks if ship name exists by checking size in the ship class
 			if ($currShip->size < 0) {
 				$this->reasons [] = 'Unknown ship name';
 				$this->valid = false;
+				continue;
 			}
-			$x = $currShip->coordinates [0];
-			$y = $currShip->coordinates [1];
-			$shipSize = $currShip->size;
-			$orientation = $currShip->orientation;
+			$x = $currShip->coordinates [0] - 1;
+			$y = $currShip->coordinates [1] - 1;
 			// Check is position is outside of board
-			if ($x > 10 || $x < 0 || $y > 10 || $y < 0) {
+			if ($x >= 10 || $x < 0 || $y >= 10 || $y < 0) {
 				$this->reasons [] = "Invalid ship position";
+				$this->valid = false;
+				continue;
 			}
-			print_r($currShip);
-			echo (strcasecmp ( $orientation, "true" ));
-			if (strcasecmp ( $orientation, "true" )) {
-				if ($y + $shipSize > 10) {
-					$reasons [] = "Invalid ship direction";
+			// If there are no errors procede and add ship to array
+			$this->shipArray [] = $currShip;
+			
+			// Place horizontal ships in board
+			if (strcasecmp ( $currShip->orientation, "true" ) == 0) {
+				// check if ship is going to be placed outside board
+				if ($x + $currShip->size > 10) {
+					$this->reasons [] = "Invalid ship position";
+					$this->valid = false;
 					continue;
 				}
-				for($i = 0; $i < $shipSize; $i ++) {
-					// check if there is a ship there already
+				for($i = 0; $i < $currShip->size; $i ++) {
+					// check if there is not a ship in that position already
+					if (is_numeric ( $this->board->grid [$y] [$x + $i] ) != 1) {
+						$reasons [] = "Conflicting ship deployments";
+						$this->valid = false;
+						continue;
+					}
+					$this->board->grid [$y] [$x + $i] = $currShip->name [0];
+				}
+			}
+			
+			// Place vertical ships in board
+			if (strcasecmp ( $currShip->orientation, "false" ) == 0) {
+				// check if ship is going to be placed outside board
+				if ($y + $currShip->size > 10) {
+					$this->reasons [] = "Invalid ship position";
+					$this->valid = false;
+					continue;
+				}
+				for($i = 0; $i < $currShip->size; $i ++) {
+					// check if there is not a ship in that position already
 					if (! is_numeric ( $this->board->grid [$y + $i] [$x] )) {
-						$reasons [] = "Conflicting ship deployments";
+						$this->reasons [] = "Conflicting ship deployments";
+						$this->valid = false;
 						continue;
 					}
-					$this->board->grid [$y + $i] [$x] = $currShip->name[0];
+					$this->board->grid [$y + $i] [$x] = $currShip->name [0];
 				}
 			}
-			else {
-				print_r($currShip);
-				if ($x + $shipSize > 10) {
-					$reasons [] = "Invalid ship direction";
-					continue;
-				}
-				for($i = 0; $i < $shipSize; $i ++) {
-					// check if there is a ship there already
-					if (! is_numeric ( $this->board->grid [$y] [$x + $i] )) {
-						$reasons [] = "Conflicting ship deployments";
-						continue;
-					}
-					$this->board->grid [$y] [$x + $i] = $currShip->name[0];
-				}
-			}
+			$this->board->shipList = $this->shipArray;
 		}
-		$this->board->printGrid();
+		
+		// print_r($this->shipInformation);
+		// print_r($this->shipArray);
+		$this->board->printGrid ();
 	}
 	public function printResponse() {
 		if (empty ( $this->reasons )) {
@@ -132,6 +154,7 @@ class Validate {
 		}
 		$responseJSON = json_encode ( $this->response );
 		echo $responseJSON;
+		return $identifier;
 	}
 }
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
@@ -144,62 +167,14 @@ $validate = new Validate ( $strategy, $deployment );
 $validate->getDeployment ();
 $validate->checkStrategy ();
 $validate->checkDeployment ();
-if($validate->valid) {
-	$validate->startBoard();
+if ($validate->valid) {
+	$validate->createBoard ();
 }
-$validate->printResponse ();
-// Add ship if there isn't any conflict
-$board = array ();
-for($i = 0; $i < 10; $i ++) {
-	$board [] = array (
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0 
-	);
-}
-for($i = 0; $i <= count ( $shipInformation [$i] ); $i ++) {
-	$y = $shipInformation [$i] [1] - 1;
-	$x = $shipInformation [$i] [2] - 1;
-	$shipSize = $ships [$shipInformation [$i] [0]] [0];
-	$shipID = $ships [$shipInformation [$i] [0]] [1];
-	
-	// placing ships
-	if (strcasecmp ( $shipInformation [$i] [3], "true" ) == 0) {
-		// if horizontal position check y to check if ship will be inside of board
-		if ($y + $shipSize > 10) {
-			$reasons [] = "Invalid ship direction";
-			continue;
-		}
-		for($j = 0; $j < $shipSize; $j ++) {
-			// check if there is a ship there already
-			if ($board [$x] [$y + $j] > 0) {
-				$reasons [] = "Conflicting ship deployments";
-				break;
-			}
-			$board [$x] [$y + $j] = $shipID;
-		}
-	} else {
-		// if vertical position check x if ship will be inside of board
-		if ($x + $shipSize > 10) {
-			$reasons [] = "Invalid ship direction";
-			continue;
-		}
-		for($j = 0; $j < $shipSize; $j ++) {
-			// check if there is a ship there already
-			if ($board [$x + $j] [$y] > 0) {
-				$reasons [] = "Conflicting ship deployments";
-				break;
-			}
-			$board [$x + $j] [$y] = $shipID;
-		}
-	}
+$pid = $validate->printResponse ();
+if ($validate->valid) {
+	$newGame = new Game ( $pid, $validate->board, $validate->board );
+	print_r($newGame);
 }
 
 ?>
+

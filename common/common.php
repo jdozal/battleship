@@ -5,7 +5,7 @@ class Ship {
 	public $orientation;
 	public $isHit;
 	public $isSunk;
-	public $coordinates = array ();
+	public $coordinates = [ ];
 	public function __construct($name, $x, $y, $orientation) {
 		$this->name = $name;
 		$this->size = $this->setSize ();
@@ -49,11 +49,10 @@ class Ship {
 			echo "\n";
 		}
 	}
-
 }
 class Board {
 	public $gridSize;
-	public $grid = [];
+	public $grid = [ ];
 	public $shipList = array ();
 	public function __construct($gridSize) {
 		$this->gridSize = $gridSize;
@@ -68,12 +67,11 @@ class Board {
 					0,
 					0,
 					0,
-					0
+					0 
 			);
 		}
 	}
-
-	public function printGrid(){
+	public function printGrid() {
 		echo "BOARD\n";
 		foreach ( $this->grid as $line ) {
 			foreach ( $line as $place ) {
@@ -82,20 +80,32 @@ class Board {
 			echo "\n";
 		}
 	}
-	public function addShip($ship) {
-		array_push ( $this->shipList, $ship );
-		
-		
-	}
-
 	
 	// check whether the given (x,y) is occupied by a ship
 	public function isOccupied($x, $y) {
-		if ($this->grid [$x] [$y])
-			return true;
-		else {
+		echo $this->grid[$y][$x];
+		if ($this->grid [$y] [$x] == 0) {
+			echo false;
 			return false;
+		} else {
+			return true;
 		}
+	}
+}
+class Game {
+	public $id;
+	public $boardPlayer;
+	public $boardMachine;
+	public $isWin;
+	public $strategy;
+	public function __construct($id, $board1, $board2) {
+		$this->id = $id;
+		$this->boardPlayer = $board1;
+		$this->boardMachine = $board2;
+	}
+	
+	// get game to ask player to ask board if all ships are sunk
+	public function isGameOver() {
 	}
 }
 ?>

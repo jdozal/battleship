@@ -3,33 +3,6 @@ echo "I love Jessica <3";
 echo "\n";
 echo "BlahBlahBlah";
 
-class Game{
-	//public $id = $_GET['pid'];
-	public $id = 1234567348;
-	public $humanPlayer;
-	public $serverPlayer;
-	public $size=10;
-	public $isWin;
-	public $strategy;
-
-
-	public function __construct(){
-		$this->humanPlayer = new Player($size);
-		$this->serverPlayer = new Player($size);
-		$this->humanPlayer->setOpponent($this->serverPlayer);
-		$this->serverPlayer->setOpponent($this->humanPlayer);
-
-	}
-
-	//get game to ask player to ask board if all ships are sunk
-	public function isGameOver(){
-		if($this->humanPlayer->areShipsSunk || $this->serverPlayer->areShipsSunk){
-			$this->isWin = true;
-		}
-
-	}
-
-}
 
 class Player{
 	public $board;
@@ -66,42 +39,6 @@ class Player{
 
 	public function setOpponent($player){
 		$this->opponent = $player;
-	}
-}
-
-class Board{
-	public $gridSize;
-	public $grid = array();
-
-
-	public function __construct($gridSize){
-		$this->gridSize = $gridSize;
-		$this->grid = $this->fillArray($gridSize);
-		echo "you created a new Board!";
-	}
-
-	public function fillArray($gridSize){
-		for($i=0;$i<10;$i++){
-			array_push($this->grid, array());
-		}
-
-		for($i=0;$i<10;$i++){
-			for($j=0;$j<10;$j++){
-				$this->grid[$i][$j]=0;
-			}
-		}
-		print_r($this->grid);
-	}
-
-	public function addShip($ship){
-		array_push($this->shipList, $ship);
-	}
-
-	//check whether the given (x,y) is occupied by a ship
-	public function isOccupied($x,$y){
-		if($this->grid[$x][$y])
-			return true;
-			return false;
 	}
 }
 
