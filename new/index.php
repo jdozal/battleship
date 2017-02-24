@@ -1,5 +1,5 @@
 <?php
-require_once '../common/common.php';
+require_once 'common.php';
 // require_once 'Board.php';
 class Validate {
 	public $strategies = array (
@@ -94,7 +94,9 @@ class Validate {
 			}
 			// If there are no errors procede and add ship to array
 			$this->shipArray [] = $currShip;
-			
+			echo occupied . "\n";
+			$this->board->isOccupied(1, 1);
+			echo "\n";
 			// Place horizontal ships in board
 			if (strcasecmp ( $currShip->orientation, "true" ) == 0) {
 				// check if ship is going to be placed outside board
@@ -137,7 +139,7 @@ class Validate {
 		
 		// print_r($this->shipInformation);
 		// print_r($this->shipArray);
-		$this->board->printGrid ();
+		//$this->board->printGrid ();
 	}
 	public function printResponse() {
 		if (empty ( $this->reasons )) {
@@ -158,8 +160,8 @@ class Validate {
 	}
 }
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
- $strategy = $_GET ['strategy'];
- $deployment = $_GET ['ships'];
+ //$strategy = $_GET ['strategy'];
+//$deployment = $_GET ['ships'];
 $valid = True;
 $strategy = "Random";
 $deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
@@ -174,7 +176,7 @@ $pid = $validate->printResponse ();
 if ($validate->valid) {
 	$newGame = new Game ( $pid, $validate->board, $validate->board );
 	print_r($newGame);
+	File::createFile($pid, $newGame);
 }
-
 ?>
 

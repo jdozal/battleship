@@ -42,7 +42,6 @@ class Player{
 	}
 }
 
-
 $game1 = new Game();
 $ship1 = new Ship("Aircraft carrier",1,6,true);
 for($i = 7;$i<11;$i++){

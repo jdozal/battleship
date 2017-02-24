@@ -108,4 +108,33 @@ class Game {
 	public function isGameOver() {
 	}
 }
+class File {
+	public function createFile($pid, $game) {
+		$filename = "../writable/$pid.txt";
+		//$filename = "/Users/jdozal/Documents/workspace/battleship/writable/$pid.txt";
+		///Users/jdozal/Documents/workspace/battleship
+		$overWrite = 'You have been overwritten!!!!!';
+		$writeFile = "Writing to new file!";
+		if (file_exists ( $filename )) {
+			echo "The file $filename exists";
+			$myFile = fopen ( "$pid.txt", "w" );
+			fwrite ( $myFile, $overWrite );
+			echo "File $filename was overwritten";
+		} else {
+			echo "The file $filename does not exist";
+			echo "creating new file";
+			$myFile = fopen ( "$pid.txt", "w" );
+			fwrite ( $myFile, $overWrite );
+		}
+		
+// 		// read entire file and create a new Game object from it
+// 		$fileToRead = fopen ( 'gameState.txt', "r" ); // open the file for reading
+// 		$game2 = new Game ( json_decode ( fread ( $fileToRead, filesize ( 'gameState.txt' ) ) ) );
+		
+// 		$game2JSON = json_encode ( $game2 );
+// 		$newFile = fopen ( 'secondGame.txt', "w" );
+// 		fwrite ( $newFile, $game2JSON );
+// 		echo 'file secondGame.txt was written';
+	}
+}
 ?>
