@@ -92,8 +92,9 @@ class Validate {
 				$this->valid = false;
 				continue;
 			}
-			// If there are no errors procede and add ship to array
+			// If there are no errors procede and add ship to array and initial to ship position array 
 			$this->shipArray [] = $currShip;
+			$this->board->shipPosition [] = $currShip->name[0];
 			echo occupied . "\n";
 			$this->board->isOccupied(1, 1);
 			echo "\n";
@@ -135,6 +136,7 @@ class Validate {
 				}
 			}
 			$this->board->shipList = $this->shipArray;
+			
 		}
 		
 		// print_r($this->shipInformation);
@@ -157,6 +159,18 @@ class Validate {
 		$responseJSON = json_encode ( $this->response );
 		echo $responseJSON;
 		return $identifier;
+	}
+	
+	// function to create random board 
+	public function createRandomBoard() {
+		$board =  new Board(10);
+		$this->board->shipPosition = array(A,B,F,S,M);
+		$p1 = new Ship("Aircraft carrier",7,5,true);
+		$p2 = new Ship("Battleship",7,5,true);
+		$p3 = new Ship("Frigate",9,6,false);
+		$p4 = new Ship("Submarine",2,1,false);
+		$p5 = new Ship("Minesweeper",10,9,false);
+		
 	}
 }
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false

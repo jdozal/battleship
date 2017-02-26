@@ -54,6 +54,7 @@ class Board {
 	public $gridSize;
 	public $grid = [ ];
 	public $shipList = array ();
+    public $shipPosition = array();
 	public function __construct($gridSize) {
 		$this->gridSize = $gridSize;
 		for($i = 0; $i < $gridSize; $i ++) {
