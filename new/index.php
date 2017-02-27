@@ -92,12 +92,10 @@ class Validate {
 				$this->valid = false;
 				continue;
 			}
-			// If there are no errors procede and add ship to array and initial to ship position array 
+			// If there are no errors procede and add ship to array and initial to ship position array
 			$this->shipArray [] = $currShip;
-			$this->board->shipPosition [] = $currShip->name[0];
-			echo occupied . "\n";
-			$this->board->isOccupied(1, 1);
-			echo "\n";
+			$this->board->shipPosition [] = $currShip->name [0];
+			//
 			// Place horizontal ships in board
 			if (strcasecmp ( $currShip->orientation, "true" ) == 0) {
 				// check if ship is going to be placed outside board
@@ -136,12 +134,11 @@ class Validate {
 				}
 			}
 			$this->board->shipList = $this->shipArray;
-			
 		}
 		
 		// print_r($this->shipInformation);
 		// print_r($this->shipArray);
-		//$this->board->printGrid ();
+		// $this->board->printGrid ();
 	}
 	public function printResponse() {
 		if (empty ( $this->reasons )) {
@@ -161,36 +158,125 @@ class Validate {
 		return $identifier;
 	}
 	
-	// function to create random board 
-	public function createRandomBoard() {
-		$board =  new Board(10);
-		$this->board->shipPosition = array(A,B,F,S,M);
-		$p1 = new Ship("Aircraft carrier",7,5,true);
-		$p2 = new Ship("Battleship",7,5,true);
-		$p3 = new Ship("Frigate",9,6,false);
-		$p4 = new Ship("Submarine",2,1,false);
-		$p5 = new Ship("Minesweeper",10,9,false);
-		
+	// function to create random board
+	public function createRandomBoard($size) {
+		$ranBoard = new Board ( $size );
+		$ranBoard->shipPosition = array (
+				A,
+				B,
+				F,
+				S,
+				M 
+		);
+		$p1 = new Ship ( "Aircraft carrier", 1, 1, true );
+		$p2 = new Ship ( "Battleship", 1, 1, true );
+		$p3 = new Ship ( "Frigate", 1, 1, false );
+		$p4 = new Ship ( "Submarine", 1, 1, false );
+		$p5 = new Ship ( "Minesweeper", 1, 1, false );
+		$shipList = array (
+				$p1,
+				$p2,
+				$p3,
+				$p4,
+				$p5 
+		);
+		$ranBoard->shipList = $shipList;
+		$count = 0;
+		while ( $count < count ( $shipList ) ) {
+			// get random orientation
+			$currOrientation = rand ( 0, 1 ) ? 'true' : 'false';
+			// get random coordinates
+			$x = rand ( 0, $size - 1 );
+			$y = rand ( 0, $size - 1 );
+			// set orientation
+			$shipList [$count]->orientation = $currOrientation;
+			$validCoordinates = true;
+			
+			// Place horizontal ships in board
+			if (strcasecmp ( $currOrientation, "true" ) == 0) {
+				if ($x + $shipList [$count]->size > 10) {
+					$validCoordinates = false;
+				}
+				$i = 0;
+				while ( $validCoordinates && $i < $shipList [$count]->size ) {
+					// check if there is not a ship in that position already
+					if ($ranBoard->grid [$y] [$x + $i] != "0") {
+						// if there is a ship set validCoordinates as false and break
+						$validCoordinates = false;
+						continue;
+					}
+					$i ++;
+				}
+				// if coordinates are valid, place coordinates on board
+				if ($validCoordinates) {
+					for($j = 0; $j < $shipList [$count]->size; $j ++) {
+						// placing coordinates on board;
+						$ranBoard->grid [$y] [$x + $j] = $shipList [$count]->name [0];
+					}
+					$shipList [$count]->addCoordinates ( $x + 1, $y + 1 );
+					$count ++;
+				}
+			}
+			// Place vertical ships on board
+			if (strcasecmp ( $currOrientation, "false" ) == 0) {
+				if ($y + $shipList [$count]->size > 10) {
+					$validCoordinates = false;
+				}
+				$i = 0;
+				while ( $validCoordinates && $i < $shipList [$count]->size ) {
+					// check if there is not a ship in that position already
+					if ($ranBoard->grid [$y + $i] [$x] != "0") {
+						// if there is a ship set validCoordinates as false and break
+						$validCoordinates = false;
+						continue;
+					}
+					$i ++;
+				}
+				// if coordinates are valid, place coordinates on board
+				if ($validCoordinates) {
+					for($j = 0; $j < $shipList [$count]->size; $j ++) {
+						// placing coordinates on board;
+						$ranBoard->grid [$y + $j] [$x] = $shipList [$count]->name [0];
+					}
+					$shipList [$count]->addCoordinates ( $x + 1, $y + 1 );
+					$count ++;
+				}
+			}
+		}
+		return $ranBoard;
 	}
 }
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Smart&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
- //$strategy = $_GET ['strategy'];
-//$deployment = $_GET ['ships'];
+// $strategy = $_GET ['strategy'];
+// $deployment = $_GET ['ships'];
 $valid = True;
 $strategy = "Random";
 $deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
 $validate = new Validate ( $strategy, $deployment );
-$validate->getDeployment ();
-$validate->checkStrategy ();
-$validate->checkDeployment ();
-if ($validate->valid) {
-	$validate->createBoard ();
+
+if (empty ( $deployment )) {
+	$validate->board = $validate->createRandomBoard ( 10 );
+	$validate->checkStrategy ();
+} else {
+	$validate->getDeployment ();
+	$validate->checkStrategy ();
+	$validate->checkDeployment ();
+	if ($validate->valid) {
+		$validate->createBoard ();
+	}
 }
+
 $pid = $validate->printResponse ();
 if ($validate->valid) {
-	$newGame = new Game ( $pid, $validate->board, $validate->board );
-	print_r($newGame);
-	File::createFile($pid, $newGame);
+	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ) );
+	echo "PLAYER BOARD";
+	$validate->board->printGrid ();
+	$gameJSON = json_encode ( $newGame );
+	echo "MACHINE BOARD";
+	$newGame->boardMachine->printGrid ();
+	print_r ( $newGame );
+	print_r ( $gameJSON );
+	File::createFile ( $pid, $gameJSON );
 }
 ?>
 
