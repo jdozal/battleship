@@ -6,6 +6,7 @@ class Ship {
 	public $isHit;
 	public $isSunk;
 	public $coordinates = [ ];
+        public $shipPosition = array();
 	public function __construct($name, $x, $y, $orientation) {
 		$this->name = $name;
 		$this->size = $this->setSize ();
