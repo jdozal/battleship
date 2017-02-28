@@ -7,7 +7,9 @@ class Ship {
 	public $isSunk;
 	public $numHits;
 	public $coordinates = [ ];
-        public $shipPosition = array();
+	public $shipPosition = array();
+
+	 
 	public function __construct($name, $x, $y, $orientation) {
 		$this->name = $name;
 		$this->size = $this->setSize ();
@@ -15,37 +17,42 @@ class Ship {
 		array_push ( $this->coordinates, $y );
 		$this->orientation = $orientation;
 	}
+
+
 	public function setSize() {
 		switch ($this->name) :
-			case ('Aircraft carrier') :
-				return 5;
-			case ("Battleship") :
-				return 4;
-			case ("Frigate") :
-			case ("Submarine") :
-				return 3;
-			case ("Minesweeper") :
-				return 2;
-			default :
-				return - 1;
-		endswitch
-		;
+		case ('Aircraft carrier') :
+			return 5;
+		case ("Battleship") :
+			return 4;
+		case ("Frigate") :
+		case ("Submarine") :
+			return 3;
+		case ("Minesweeper") :
+			return 2;
+		default :
+			return - 1;
+			endswitch
+			;
 	}
 	public function addCoordinates($x, $y) {
 		$this->coordinates [0] = $x;
 		$this->coordinates [1] = $y;
 	}
 	public function printShipInfo() {
-		echo $this->name;
+		echo "name: " . $this->name;
 		echo "\n";
-		echo $this->size;
+		echo "size: " . $this->size;
 		echo "\n";
-		echo $this->orientation;
+		echo "orientation: " . $this->orientation;
 		echo "\n";
-		echo $this->isHit;
+		echo "isHit: " . $this->isHit;
 		echo "\n";
-		echo $this->isSunk;
+		echo "isSunk: " . $this->isSunk;
 		echo "\n";
+		echo "numHits: " . $this->numHits;
+		echo "\n";
+		echo"coordinates[] = \n";
 		foreach ( $this->coordinates as $spot ) {
 			echo $spot;
 			echo "\n";
@@ -70,7 +77,7 @@ class Board {
 					0,
 					0,
 					0,
-					0 
+					0
 			);
 		}
 	}
@@ -83,7 +90,7 @@ class Board {
 			echo "\n";
 		}
 	}
-	
+
 	// check whether the given (x,y) is occupied by a ship
 	public function isOccupied($x, $y) {
 		echo $this->grid [$y] [$x];
@@ -106,29 +113,14 @@ class Game {
 		$this->boardPlayer = $board1;
 		$this->boardMachine = $board2;
 	}
-	
+
 	// get game to ask player to ask board if all ships are sunk
 	public function isGameOver() {
 	}
-}
-class File {
-	public function createFile($pid, $game) {
-		$filename = "../writable/$pid.txt";
-		// $filename = "/Users/jdozal/Documents/workspace/battleship/writable/$pid.txt";
-		// /Users/jdozal/Documents/workspace/battleship
-		$overWrite = 'You have been overwritten!!!!!';
-		$writeFile = "Writing to new file!";
-		if (file_exists ( $filename )) {
-			echo "The file $filename exists";
-			$myFile = fopen ( "$pid.txt", "w" );
-			fwrite ( $myFile, $overWrite );
-			echo "File $filename was overwritten";
-		} else {
-			echo "The file $filename does not exist";
-			echo "creating new file";
-			$myFile = fopen ( "$pid.txt", "w" );
-			fwrite ( $myFile, $overWrite );
-		}
+
+	public function createFile($pid,$game){
+		$fileName = fopen("../writable/$pid.txt","w");
+		fwrite($fileName,$game);
 	}
 }
 
