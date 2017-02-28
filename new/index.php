@@ -255,8 +255,8 @@ class Validate {
 $strategy = $_GET ['strategy'];
 $deployment = $_GET ['ships'];
 $valid = true;
-$strategy = "Sweep";
-$deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
+//$strategy = "Sweep";
+//$deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
 $validate = new Validate ( $strategy, $deployment );
 if (empty ( $deployment )) {
 	$validate->board = $validate->createRandomBoard ( 10 );

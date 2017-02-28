@@ -10,13 +10,14 @@ $pid = $_GET ['pid'];
 $fileToRead = fopen ( "../writable/$pid.txt", "r" ); // open the file for reading
 $game = json_decode ( fread ( $fileToRead, filesize ( "../writable/$pid.txt" ) ) );
 // get shot from url
- $shot = $_GET ['shot'];
+$shot = $_GET ['shot'];
 $shot = explode ( ",", $shot );
 $x = $shot [0];
 $y = $shot [1];
 
 // get strategy from game object
-$strategy = "Sweep";
+$strategy = $game->strategy;
+echo $strategy."<br/>";
 // save board from player and from machine
 $boardPlayer = $game->boardPlayer;
 $boardMachine = $game->boardMachine;
