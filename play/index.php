@@ -5,20 +5,18 @@
  * Ana Garcia - ajgarciaramirez@miners.utep.edu
  *
  */
-require_once 'common.php';
-// $pid = $_GET ['pid'];
-$fileToRead = fopen ( "writable/58b5202ea8ed0.txt", "r" ); // open the file for reading
-$game = json_decode ( fread ( $fileToRead, filesize ( "writable/58b5202ea8ed0.txt" ) ) );
-$strategy = $game->strategy;
+require_once '../common/common.php';
+$pid = $_GET ['pid'];
+$fileToRead = fopen ( "../writable/$pid.txt", "r" ); // open the file for reading
+$game = json_decode ( fread ( $fileToRead, filesize ( "../writable/$pid.txt" ) ) );
 // get shot from url
-// $shot = $_GET ['shot'];
-// $shot = explode ( ",", $shot );
-$shot = array (
-		2,
-		5 
-);
+ $shot = $_GET ['shot'];
+$shot = explode ( ",", $shot );
 $x = $shot [0];
 $y = $shot [1];
+
+// get strategy from game object
+$strategy = "Sweep";
 // save board from player and from machine
 $boardPlayer = $game->boardPlayer;
 $boardMachine = $game->boardMachine;
@@ -39,29 +37,41 @@ foreach ( $boardPlayer->grid as $line ) {
 }
 
 $response = new Strategy ();
+// let player make shot
 $response->humanShoot ( $x, $y, $game->boardMachine );
 
-// if (strcasecmp ( $strategy, "Sweep" ) == 0) {
-// echo "enter sweep if";
-// $response->SweepStrategy($boardPlayer);
-
-// }
+// if player wins with shot print response
+if ($response->ack_shot->isWin) {
+	$response->shot = null;
+	print_r ( json_encode ( $response ) );
+} else {
+	if (strcasecmp ( $strategy, "Sweep" ) == 0) {
+		$response->SweepStrategy ( $game->boardPlayer );
+	}
+	if (strcasecmp ( $strategy, "Random" ) == 0) {
+		$response->RandomStrategy ( $game->boardPlayer );
+	}
+	print_r ( json_encode ( $response ) );
+}
 echo "\n\nMACHINE BOARD\n";
-foreach ( $boardMachine->grid as $line ) {
+foreach ( $game ->boardMachine->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
 	echo "\n";
 }
 echo "PLAYER BOARD\n";
-foreach ( $boardPlayer->grid as $line ) {
+foreach ( $game ->boardPlayer->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
 	echo "\n";
 }
+$game->boardMachine = $boardMachine;
+$game->boardPlayer = $boardPlayer;
+$game->isWin = ($response->ack_shot->isWin || $response->shot->isWin);
+$response->createFile($pid, json_encode($game));
 
-print_r ( json_encode ( $response ) );
 class Strategy {
 	public $response = true;
 	public $ack_shot = array (
@@ -127,7 +137,7 @@ class Strategy {
 	public function humanShoot($x, $y, $boardMachine) {
 		$gridValue = $boardMachine->grid [$y - 1] [$x - 1];
 		echo "value in board machine = " . $boardMachine->grid [$y - 1] [$x - 1];
-		if (($gridValue == '0') && ($gridValue == 'X')) {
+		if (($gridValue == '0') || ($gridValue == 'X')) {
 			$boardMachine->grid [$y - 1] [$x - 1] = 'X';
 			// response when shot is not significant
 			$this->ack_shot = $this->setShot ( $x, $y, false, false, false, [ ] );
@@ -136,12 +146,54 @@ class Strategy {
 			print_r ( $hitShip );
 			$isSunk = $hitShip->isSunk == 'true';
 			$isWin = $this->checkIfWin ( $boardMachine ) == 'true';
-			echo "$isSunk - $isWin";
 			$this->ack_shot = $this->setShot ( $x, $y, true, $isSunk, $isWin, $hitShip->coordinates );
 			$boardMachine->grid [$y - 1] [$x - 1] = 'X';
 		}
 	}
 	public function SweepStrategy($boardPlayer) {
+		echo "SWEEP\n";
+		for($x = 0; $x < count ( $boardPlayer->grid ); $x ++) {
+			for($y = 0; $y < count ( $boardPlayer->grid ); $y ++) {
+				$gridValue = $boardPlayer->grid [$y] [$x];
+				if ($gridValue == '0') {
+					$this->shot = $this->setShot ( $x + 1, $y + 1, false, false, false, [ ] );
+					$boardPlayer->grid [$y] [$x] = 'X';
+					return;
+				} elseif ($gridValue == 'X') {
+					continue;
+				} else {
+					$hitShip = $this->findShip ( $gridValue, $boardPlayer );
+					print_r ( $hitShip );
+					$isSunk = $hitShip->isSunk == 'true';
+					$isWin = $this->checkIfWin ( $boardPlayer ) == 'true';
+					$this->shot = $this->setShot ( $y + 1, $x + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+					$boardPlayer->grid [$y] [$x] = 'X';
+					return;
+				}
+			}
+			echo "\n";
+		}
+	}
+	public function RandomStrategy($boardPlayer) {
+		$x = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+		$y = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+		$gridValue = $boardPlayer->grid [$y] [$x];
+		
+		if (($gridValue == '0') || ($gridValue == 'X')) {
+			$this->shot = $this->setShot ( $x + 1, $y + 1, false, false, false, [ ] );
+			$boardPlayer->grid [$y] [$x] = 'X';
+		} else {
+			$hitShip = $this->findShip ( $gridValue, $boardPlayer );
+			print_r ( $hitShip );
+			$isSunk = $hitShip->isSunk == 'true';
+			$isWin = $this->checkIfWin ( $boardPlayer ) == 'true';
+			$this->shot = $this->setShot ( $x + 1, $y + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+			$boardPlayer->grid [$y] [$x] = 'X';
+		}
+	}
+    public function createFile($pid,$game){
+		$fileName = fopen("../writable/$pid.txt","w");
+		fwrite($fileName,$game);
 	}
 }
 

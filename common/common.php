@@ -1,9 +1,9 @@
 <?php
 /*Source code by:
  * Jessica Dozal - jldozalcruz@miners.utep.edu
- * Ana Garcia - ajgarciaramirez@miners.utep.edu
- * 
- */
+* Ana Garcia - ajgarciaramirez@miners.utep.edu
+*
+*/
 class Ship {
 	public $name;
 	public $size;
@@ -12,31 +12,30 @@ class Ship {
 	public $isSunk;
 	public $numHits;
 	public $coordinates = [ ];
-    public $shipPosition = array();        
-   
+	 
 	public function __construct($name, $x, $y, $orientation) {
 		$this->name = $name;
 		$this->size = $this->setSize ();
 		array_push ( $this->coordinates, $x );
 		array_push ( $this->coordinates, $y );
 		$this->orientation = $orientation;
-	}	
-	
+	}
+
 	public function setSize() {
 		switch ($this->name) :
-			case ('Aircraft carrier') :
-				return 5;
-			case ("Battleship") :
-				return 4;
-			case ("Frigate") :
-			case ("Submarine") :
-				return 3;
-			case ("Minesweeper") :
-				return 2;
-			default :
-				return - 1;
-		endswitch
-		;
+		case ('Aircraft carrier') :
+			return 5;
+		case ("Battleship") :
+			return 4;
+		case ("Frigate") :
+		case ("Submarine") :
+			return 3;
+		case ("Minesweeper") :
+			return 2;
+		default :
+			return - 1;
+			endswitch
+			;
 	}
 	public function addCoordinates($x, $y) {
 		$this->coordinates [0] = $x;
@@ -80,7 +79,7 @@ class Board {
 					0,
 					0,
 					0,
-					0 
+					0
 			);
 		}
 	}
@@ -93,7 +92,7 @@ class Board {
 			echo "\n";
 		}
 	}
-	
+
 	// check whether the given (x,y) is occupied by a ship
 	public function isOccupied($x, $y) {
 		echo $this->grid [$y] [$x];
@@ -115,13 +114,13 @@ class Game {
 		$this->id = $id;
 		$this->boardPlayer = $board1;
 		$this->boardMachine = $board2;
-        $this->strategy = $strategy;
+		$this->strategy = $strategy;
 	}
-	
+
 	// get game to ask player to ask board if all ships are sunk
 	public function isGameOver() {
 	}
-	
+
 	public function createFile($pid,$game){
 		$fileName = fopen("../writable/$pid.txt","w");
 		fwrite($fileName,$game);

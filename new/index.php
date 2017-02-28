@@ -84,7 +84,7 @@ class Validate {
 		
 		// Traverse array that contains ship information
 		foreach ( $this->shipInformation as $boat ) {
-			$currShip = new Ship ( $boat [0], $boat [1], $boat [2], $boat [3] );
+			$currShip = new Ship ( $boat [0], (int)$boat [1], (int)$boat [2], $boat [3] );
 			// Checks if ship name exists by checking size in the ship class
 			if ($currShip->size < 0) {
 				$this->reasons [] = 'Unknown ship name';
@@ -143,9 +143,6 @@ class Validate {
 			$this->board->shipList = $this->shipArray;
 		}
 		
-		// print_r($this->shipInformation);
-		// print_r($this->shipArray);
-		// $this->board->printGrid ();
 	}
 	public function printResponse() {
 		if (empty ( $this->reasons )) {
@@ -255,11 +252,11 @@ class Validate {
 }
 
 // http://cs3360.cs.utep.edu/jldozalcruz/new?strategy=Sweep&ships=Aircraft+carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false
- $strategy = $_GET ['strategy'];
- $deployment = $_GET ['ships'];
+$strategy = $_GET ['strategy'];
+$deployment = $_GET ['ships'];
 $valid = true;
-//$strategy = "Random";
-//$deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
+$strategy = "Sweep";
+$deployment = "Aircraft carrier,1,6,false;Battleship,7,5,true;Frigate,2,1,false;Submarine,9,6,false;Minesweeper,10,9,false";
 $validate = new Validate ( $strategy, $deployment );
 if (empty ( $deployment )) {
 	$validate->board = $validate->createRandomBoard ( 10 );
@@ -272,11 +269,15 @@ if (empty ( $deployment )) {
 		$validate->createBoard ();
 	}
 }
-
 $pid = $validate->printResponse ();
 if ($validate->valid) {
 	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ), $strategy );
 	$newGame->createFile ( $pid, json_encode ( $newGame ) );
+	//fwrite($pid,$game);
+	echo "MACHINE ";
+	$newGame->boardMachine->printGrid();
+	echo "PLAYER ";
+	$newGame->boardPlayer->printGrid();
 }
 ?>
 
