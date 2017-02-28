@@ -1,5 +1,5 @@
 <?php
-require_once 'common.php';
+require_once '../common/common.php';
 // require_once 'Board.php';
 class Validate {
 	public $strategies = array (
@@ -274,8 +274,7 @@ if ($validate->valid) {
 	echo "MACHINE BOARD";
 	$newGame->boardMachine->printGrid ();
 	print_r($newGame);
-	$baby = "baby";
-	$newGame->createFile($baby, json_encode($newGame));
+	$newGame->createFile($pid, json_encode($newGame));
 }
 ?>
 
