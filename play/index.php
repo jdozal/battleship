@@ -1,16 +1,17 @@
 <?php
-echo "I love Jessica <3";
-echo "\n";
-echo "BlahBlahBlah";
-echo "from play/index.php\n";
-
 require_once '../common/common.php';
 
+$pid = $_GET ['pid'];
+$strategy = $_GET ['strategy'];
+echo $pid;
+$fileToRead = fopen ( "../writable/$pid.txt", "r" ); // open the file for reading
+$game =  json_decode ( fread ( $fileToRead, filesize ( "../writable/$pid.txt" ) ) );
+print_r($game);
 // $randomStrategy = new RandomStrategy ();
 // $randomStrategy->humanShoot ( $newGame->boardMachine, 2, 1 );
 
-$randomStrategy_a = new RandomStrategy();
-$randomStrategy_a->shootRandom($newGame->boardPlayer);
+// $randomStrategy_a = new RandomStrategy();
+// $randomStrategy_a->shootRandom($newGame->boardPlayer);
 
 //TODO fix breaking of for loops
 // $sweepStrategy = new SweepStrategy();
