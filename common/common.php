@@ -41,25 +41,7 @@ class Ship {
 		$this->coordinates [0] = $x;
 		$this->coordinates [1] = $y;
 	}
-	public function printShipInfo() {
-		echo "name: " . $this->name;
-		echo "\n";
-		echo "size: " . $this->size;
-		echo "\n";
-		echo "orientation: " . $this->orientation;
-		echo "\n";
-		echo "isHit: " . $this->isHit;
-		echo "\n";
-		echo "isSunk: " . $this->isSunk;
-		echo "\n";
-		echo "numHits: " . $this->numHits;
-		echo "\n";
-		echo"coordinates[] = \n";
-		foreach ( $this->coordinates as $spot ) {
-			echo $spot;
-			echo "\n";
-		}
-	}
+
 }
 class Board {
 	public $gridSize;
@@ -84,12 +66,12 @@ class Board {
 		}
 	}
 	public function printGrid() {
-		echo "BOARD\n";
+		echo "BOARD<br/>";
 		foreach ( $this->grid as $line ) {
 			foreach ( $line as $place ) {
 				echo $place;
 			}
-			echo "\n";
+			echo "<br/>";
 		}
 	}
 

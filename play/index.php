@@ -21,19 +21,19 @@ $strategy = "Sweep";
 $boardPlayer = $game->boardPlayer;
 $boardMachine = $game->boardMachine;
 
-echo "MACHINE BOARD\n";
+echo "MACHINE BOARD<br/>";
 foreach ( $boardMachine->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
-	echo "\n";
+	echo "<br/>";
 }
-echo "PLAYER BOARD\n";
+echo "PLAYER BOARD<br/>";
 foreach ( $boardPlayer->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
-	echo "\n";
+	echo "<br/>";
 }
 
 $response = new Strategy ();
@@ -53,19 +53,19 @@ if ($response->ack_shot->isWin) {
 	}
 	print_r ( json_encode ( $response ) );
 }
-echo "\n\nMACHINE BOARD\n";
+echo "<br/><br/>MACHINE BOARD<br/>";
 foreach ( $game ->boardMachine->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
-	echo "\n";
+	echo "<br/>";
 }
-echo "PLAYER BOARD\n";
+echo "PLAYER BOARD<br/>";
 foreach ( $game ->boardPlayer->grid as $line ) {
 	foreach ( $line as $place ) {
 		echo $place;
 	}
-	echo "\n";
+	echo "<br/>";
 }
 $game->boardMachine = $boardMachine;
 $game->boardPlayer = $boardPlayer;
@@ -151,7 +151,7 @@ class Strategy {
 		}
 	}
 	public function SweepStrategy($boardPlayer) {
-		echo "SWEEP\n";
+		echo "SWEEP<br/>";
 		for($x = 0; $x < count ( $boardPlayer->grid ); $x ++) {
 			for($y = 0; $y < count ( $boardPlayer->grid ); $y ++) {
 				$gridValue = $boardPlayer->grid [$y] [$x];
@@ -171,7 +171,7 @@ class Strategy {
 					return;
 				}
 			}
-			echo "\n";
+			echo "<br/>";
 		}
 	}
 	public function RandomStrategy($boardPlayer) {

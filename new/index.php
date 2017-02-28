@@ -274,9 +274,9 @@ if ($validate->valid) {
 	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ), $strategy );
 	$newGame->createFile ( $pid, json_encode ( $newGame ) );
 	//fwrite($pid,$game);
-	echo "MACHINE ";
+	echo "<br/>MACHINE ";
 	$newGame->boardMachine->printGrid();
-	echo "PLAYER ";
+	echo "<br/>PLAYER ";
 	$newGame->boardPlayer->printGrid();
 }
 ?>
