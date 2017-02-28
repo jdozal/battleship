@@ -1,4 +1,10 @@
 <?php
+
+/*Source code by:
+ * Jessica Dozal - jldozalcruz@miners.utep.edu
+ * Ana Garcia - ajgarciaramirez@miners.utep.edu
+ *
+ */
 class Game {
 	var $size;
 	var $strategies;

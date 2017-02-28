@@ -1,4 +1,9 @@
 <?php
+/*Source code by:
+ * Jessica Dozal - jldozalcruz@miners.utep.edu
+ * Ana Garcia - ajgarciaramirez@miners.utep.edu
+ * 
+ */
 class Ship {
 	public $name;
 	public $size;
@@ -7,8 +12,7 @@ class Ship {
 	public $isSunk;
 	public $numHits;
 	public $coordinates = [ ];
-    public $shipPosition = array();
-        
+    public $shipPosition = array();        
    
 	public function __construct($name, $x, $y, $orientation) {
 		$this->name = $name;
@@ -16,8 +20,7 @@ class Ship {
 		array_push ( $this->coordinates, $x );
 		array_push ( $this->coordinates, $y );
 		$this->orientation = $orientation;
-	}
-	
+	}	
 	
 	public function setSize() {
 		switch ($this->name) :
@@ -124,16 +127,5 @@ class Game {
 		fwrite($fileName,$game);
 	}
 }
-
-
-
-// // read entire file and create a new Game object from it
-// $fileToRead = fopen ( 'gameState.txt', "r" ); // open the file for reading
-// $game2 = new Game ( json_decode ( fread ( $fileToRead, filesize ( 'gameState.txt' ) ) ) );
-
-// $game2JSON = json_encode ( $game2 );
-// $newFile = fopen ( 'secondGame.txt', "w" );
-// fwrite ( $newFile, $game2JSON );
-// echo 'file secondGame.txt was written';
 
 ?>

@@ -1,4 +1,11 @@
 <?php
+
+/*Source code by:
+ * Jessica Dozal - jldozalcruz@miners.utep.edu
+ * Ana Garcia - ajgarciaramirez@miners.utep.edu
+ *
+ */
+
 require_once '../common/common.php';
 
 $pid = $_GET ['pid'];
@@ -23,23 +30,13 @@ if(strcasecmp($strategy, "Sweep") == 0) {
 	$sweepStrategy = new SweepStrategy ();
 	$sweepStrategy->humanShoot($game->boardMachine, $shot[0], $shot[1]);
 	if(!($sweepStrategy->checkIfWin($game->boardMachine))){//if the player's shot is not a win
-		$randomStrategy->shootRandom($game->boardPlayer); //then the server makes a shot on the player's board
+		$sweepStrategy->shootRandom($game->boardPlayer); //then the server makes a shot on the player's board
 	}
 }
 
 if(strcasecmp($strategy, "Smart") == 0) {
 	echo "enter smart if";
 }
-// print_r($game);
-// $randomStrategy = new RandomStrategy ();
-// $randomStrategy->humanShoot ( $newGame->boardMachine, 2, 1 );
-
-// $randomStrategy_a = new RandomStrategy();
-// $randomStrategy_a->shootRandom($newGame->boardPlayer);
-
-// TODO fix breaking of for loops
-// $sweepStrategy = new SweepStrategy();
-// $sweepStrategy->shootSweep($newGame->boardPlayer);
 
 /*
  * {"response": true,
@@ -63,20 +60,20 @@ class Strategy {
 	public $ack_shot;
 	public function __construct() {
 		$this->shot = array (
-				'x' => 'car',
-				'y' => 'BMW',
-				'isHit' => 'WW',
-				'isSunk' => 'Mini',
-				'isWin' => 'Civic',
-				'ship' => 'Lala'
+				'x' => '0',
+				'y' => '0',
+				'isHit' => '0',
+				'isSunk' => '0',
+				'isWin' => '0',
+				'ship' => '0'
 		);
 		$this->ack_shot = array (
-				'x' => 'car',
-				'y' => 'BMW',
-				'isHit' => 'WW',
-				'isSunk' => 'Mini',
-				'isWin' => 'Civic',
-				'ship' => 'Lala'
+				'x' => '0',
+				'y' => '0',
+				'isHit' => '0',
+				'isSunk' => '0',
+				'isWin' => '0',
+				'ship' => '0'
 		);
 	}
 	public function printShotInfo() {
