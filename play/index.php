@@ -2,8 +2,19 @@
 echo "I love Jessica <3";
 echo "\n";
 echo "BlahBlahBlah";
+echo "from play/index.php\n";
 
-require_once 'common.php';
+require_once '../common/common.php';
+
+// $randomStrategy = new RandomStrategy ();
+// $randomStrategy->humanShoot ( $newGame->boardMachine, 2, 1 );
+
+$randomStrategy_a = new RandomStrategy();
+$randomStrategy_a->shootRandom($newGame->boardPlayer);
+
+//TODO fix breaking of for loops
+// $sweepStrategy = new SweepStrategy();
+// $sweepStrategy->shootSweep($newGame->boardPlayer);
 
 /*
  * {"response": true,
@@ -23,135 +34,209 @@ require_once 'common.php';
  * "ship:", []}}
  */
 class Strategy {
-	public $shot = array (
-			'x' => NULL,
-			'y' => NULL,
-			'isHit' => NULL,
-			'isSunk' => NULL,
-			'isWin' => NULL,
-			'ship' => NULL 
-	);
-	public $ack_shot = array (
-			'x' => NULL,
-			'y' => NULL,
-			'isHit' => NULL,
-			'isSunk' => NULL,
-			'isWin' => NULL,
-			'ship' => NULL 
-	);
+	public $shot;
+	public $ack_shot;
+	public function __construct() {
+		$this->shot = array (
+				'x' => 'car',
+				'y' => 'BMW',
+				'isHit' => 'WW',
+				'isSunk' => 'Mini',
+				'isWin' => 'Civic',
+				'ship' => 'Lala'
+		);
+		$this->ack_shot = array (
+				'x' => 'car',
+				'y' => 'BMW',
+				'isHit' => 'WW',
+				'isSunk' => 'Mini',
+				'isWin' => 'Civic',
+				'ship' => 'Lala'
+		);
+	}
+
+	public function printShotInfo(){
+		echo "x: " . $this->shot['x'] . "\n";
+		echo "y: " . $this->shot['y'] . "\n";
+		echo "isHit: " . $this->shot['isHit'] . "\n";
+		echo "isSunk: " . $this->shot['isSunk']. "\n";
+		echo "isWin: " . $this->shot['isWin'] . "\n";
+		echo "isShip: " . $this->shot['ship'] . "\n";
+	}
+
+	public function print_set_ack_shotInfo(){
+		echo "ack_shot: \n";
+		echo 'x' . $this->ack_shot['x'];
+		echo "\n";
+		echo 'y' . $this->ack_shot['y'];
+		echo "\n";
+		echo 'isHit' . $this->ack_shot['isHit'];
+		echo "\n";
+		echo 'isSunk' . $this->ack_shot['isSunk'];
+		echo "\n";
+		echo 'isWin' . $this->ack_shot['isWin'];
+		echo "\n";
+		echo 'isShip' . $this->ack_shot['ship'];
+		echo "\n";
+	}
 	public function humanShoot($boardMachine, $x, $y) {
-		// if there's a ship at x,y that hasn't been hit
-		if (($boardMachine [$x] [$y] != 0) && ($boardMachine [$x] [$y] =! 'X')) {
-			$ship = $this->findShip ( $boardMachine [$x] [$y], $boardMachine );
-			$this->ack_shot = $this->setShotInfo ( $x, $y, $ship,$boardMachine );
-		}  // There's nothing at x,y
-		else if ($boardMachine [$x] [$y] == 0) {
-			$ship = NULL;//no ship was hit. Used to store info in ack_shot
-			$this->set_ack_ShotInfo ( $x, $y, $ship );
-			// mark this x,y as hit
-			$boardMachine [$x] [$y] = 'X';
+
+		echo "entered humanShoot method\n";
+		if (is_numeric ( $boardMachine->grid [$x] [$y] )) {
+			echo "entered if-statement\n";
+			echo $boardMachine->grid [$x][$y];
+			echo 'is numeric and there is no ship here\n';
+			$ship = null;
+			$this->setShotInfo($x, $y, $ship, $boardMachine);
+			echo "Printing shot info\n";
+			$this->printShotInfo();
+			$boardMachine->grid [$x][$y] = 'X';
+			echo $boardMachine->grid [$x][$y] = 'X';
+			// echo "there's a ship at $x,$y and it's $boardMachine->grid[$x] [$y]\n";
+		}
+		else if (! is_numeric ( $boardMachine->grid [$x][$y] ) && $boardMachine->grid [$x][$y] != 'X') {
+			echo "entered else-if statement\n";
+			echo $boardMachine->grid [$x] [$y];
+			echo "is not numeric and there is a ship here\n";
+			$ship = $this->findShip ( $boardMachine->grid [$x] [$y], $boardMachine );
+			$ship->printShipInfo();
+			echo "parameters for ack_shot";
+			echo $x . "\n";
+			echo $y . "\n";
+			$this->print_set_ack_shotInfo();
+			$this->set_ack_ShotInfo($x, $y, $ship, $boardMachine);
+			echo "After set_ack_shotInfo\n";
+			$this->print_set_ack_shotInfo();
 		}
 	}
-	/*
-	 * TODO Add stuff to Ship class to find which ship is on
-	 * the board and redo this findShip() method and MAKE IT WORK ;)
-	 */
+
 	public function findShip($initial, $board) {
 		/*
 		 * find the index (key) in the board's shipPosition array
 		 * from the initial of the ship that was hit (value)
 		 */
-		$shipIndex = array_search ( $board->shipPosition, $initial );
+		$shipIndex = array_search ( $initial, $board->shipPosition );
 		/*
 		 * Access the board's shipList, find the ship at $shipIndex
 		 * and mark its boolean values as appropriate
 		 */
-		$hitShip = $board->shipList[$shipIndex];
+		$hitShip = $board->shipList [$shipIndex];
 		$hitShip->isHit = true;
-		$hitShip->numHits ++;
+		$hitShip->numHits++;
 		// if it's hit in as many spots as its size, the ship is sunk
 		if ($hitShip->numHits == $hitShip->size) {
 			$hitShip->isSunk = true;
 		}
 		return $hitShip;
 	}
-	public function setShotInfo($row, $col, $ship,$board) {
+	public function setShotInfo($row, $col, $ship, $board) {
 		$this->shot ['x'] = $row;
 		$this->shot ['y'] = $col;
 		$this->shot ['isHit'] = $ship->isHit;
 		$this->shot ['isSunk'] = $ship->isSunk;
-		$this->shot ['isWin'] = $this->checkIfWin($board); // TODO check with game class whether or not the shot was a win
+		$this->shot ['isWin'] = $this->checkIfWin ( $board ); // TODO check with game class whether or not the shot was a win
 		$this->shot ['ship'] = $ship->coordinates;
-	
+
 		// json_encode($this->shot);
 	}
-	
-	//Checks if all the ships in one board are sunk
-	public function checkIfWin($board){
-		foreach($board->shipList as $ship){
-			if(!($ship->isSunk)){
-				return false;//if at least one ship is not sunk,the game's still on
-			}				
+
+	// Checks if all the ships in one board are sunk
+	public function checkIfWin($board) {
+		foreach ( $board->shipList as $ship ) {
+			if (! ($ship->isSunk)) {
+				return false; // if at least one ship is not sunk,the game's still on
+			}
 		}
-		return true; //otherwise, all ships are sunk, so game is over
+		return true; // otherwise, all ships are sunk, so game is over
 	}
 	public function set_ack_ShotInfo($row, $col, $ship, $board) {
+		// 		echo "in set_ack_ShotInfo\n";
+		// 		echo $row;
+		// 		echo $col;
+
+		// 		echo $ship->printShipInfo();
 		$this->ack_shot ['x'] = $row;
 		$this->ack_shot ['y'] = $col;
 		$this->ack_shot ['isHit'] = $ship->isHit;
 		$this->ack_shot ['isSunk'] = $ship->isSunk;
-		$this->ack_shot ['isWin'] = $this->checkIfWin($board); // TODO check with game class whether or not the shot was a win
+		$this->ack_shot ['isWin'] = $this->checkIfWin ( $board );
 		$this->ack_shot ['ship'] = $ship->coordinates;
-		
+
 		// json_encode($this->shot);
 	}
 }
 class SweepStrategy extends Strategy {
+
+	public function __construct(){
+
+	}
 	// boardPlayer is beting hit (the server is hitting the human's board)
 	public function shootSweep($boardPlayer) {
+		echo "entered shootSweep\n";
+		//human shot before every server shot as long as the game isn't over
 		for($row = 0; $row < 10; $row ++) {
 			for($col = 0; $col < 10; $col ++) {
-				// There's a ship in this row,col spot in the board
-				// and this place hasn't been shot before
-				// TODO check this condition. I think it's OK
-				if (($boardPlayer [$row][$col] != 0) && ($boardPlayer [$row][$col] != 'X')) {
-					$ship = $this->findShip ( $boardPlayer [$row][$col], $boardPlayer ); // find which ship was shot
-					                                                                      // call the superclass' setShotInfo method
-					$this->setShotInfo ( $row, $col, $ship,$boardPlayer );
-					// mark this spot as hit
-					$boardPlayer [$row][$col] = 'X';
-				} else { // there's no ship at row,col
-					$ship = NULL;
-					$this->setShotInfo ( $row, $col, $ship, $boardPlayer);
-					// mark row,col as hit
-					$boardPlayer [$row][$col] = 'X';
+				//nothing to hit
+				if (is_numeric($boardPlayer->grid[$row][$col])) {
+					echo "inside if-statement, is_numeric";
+					echo $boardPlayer->grid [$row][$col] . "\n";
+					$ship = null;
+					$this->set_ack_shotInfo($row,$col,$ship,$boardPlayer);
+					echo "shot_info:\n";
+					$this->print_set_ack_shotInfo();
+					$boardPlayer->grid[$row][$col] = 'X';
+					echo $boardPlayer->grid[$row][$col];
+					echo "about to break\n";
+					return;
+					//there is a ship to hit
+				} else if (!is_numeric ( $boardPlayer->grid [$row][$col] ) && $boardPlayer->grid [$row][$col] != 'X'){
+					echo "inside else if- is not numeric\n";
+					echo $boardPlayer->grid [$row][$col] . "\n";
+					$ship = $this->findShip ( $boardPlayer->grid[$row][$col], $boardPlayer ); // find which ship was shot
+					$ship->printShipInfo();
+					$this->setShotInfo($row,$col,$ship, $boardPlayer);
+					echo "printing shot info\n";
+					$this->printShotInfo();
 				}
 			}
 		}
 	}
 }
+
 class RandomStrategy extends Strategy {
+	public function __construct(){
+
+	}
+
 	// TODO do I need constructors with no parameters for each strategy?
 	public function shootRandom($boardPlayer) {
-		$row = rand ( 0, count ( $boardPlayer ) - 1 );
-		$col = rand ( 0, count ( $boardPlayer ) - 1 );
-		
+		echo "now in shootRandom\n";
+		$row = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+		$col = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+
 		// while row,col has been hit
-		while ( $boardPlayer [$row] [$col] == 'X' ) {
+		while ( $boardPlayer->grid[$row] [$col] == 'X' ) {
 			// find another random row, col
-			$row = rand ( 0, count ( $boardPlayer ) - 1 );
-			$col = rand ( 0, count ( $boardPlayer ) - 1 );
+			$row = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+			$col = rand ( 0, count ( $boardPlayer->grid ) - 1 );
 		}
+		echo $row . "\n";
+		echo $col . "\n";
 		// there's no ship at row,col
-		if ($boardPlayer [$row] [$col] == 0) {
-			$boardPlayer [$row] [$col] = 'X';
+		if ($boardPlayer->grid[$row][$col] == "0") {
+			echo "entered if- there is no ship at row,col";
+			$boardPlayer->grid[$row] [$col] = 'X';
+			echo $boardPlayer->grid[$row] [$col];
 			// encode the shot as a miss by calling the superclass' method
-			$ship = NULL; // TODO test whether this constructor works with no parameters
+			$ship = NULL;
 			$this->setShotInfo ( $row, $col, $ship, $boardPlayer );
+			$this->printShotInfo();
 		} else {
-			$ship = $this->findShip ( $boardPlayer[$row][$col], $boardPlayer );
-			// encode the shot as a miss by calling the superclass' method
+			$ship = $this->findShip ( $boardPlayer->grid[$row] [$col], $boardPlayer );
+			//encode an actual shot
+			$ship->printShipInfo();
 			$this->setShotInfo ( $row, $col, $ship, $boardPlayer );
+			$this->printShotInfo();
 		}
 	}
 }
@@ -171,7 +256,7 @@ class SmartStrategy extends Strategy {
 				} else if ($boardPlayer [$row] [$col] == 0) {
 					$ship = NULL;
 					// encode the shot as a miss by calling the superclass' method
-					$this->setShotInfo ( $row, $col, $ship,$boardPlayer );
+					$this->setShotInfo ( $row, $col, $ship, $boardPlayer );
 				}
 			}
 		}
