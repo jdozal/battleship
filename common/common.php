@@ -108,10 +108,11 @@ class Game {
 	public $boardMachine;
 	public $isWin;
 	public $strategy;
-	public function __construct($id, $board1, $board2) {
+	public function __construct($id, $board1, $board2, $strategy) {
 		$this->id = $id;
 		$this->boardPlayer = $board1;
 		$this->boardMachine = $board2;
+        $this->strategy = $strategy;
 	}
 	
 	// get game to ask player to ask board if all ships are sunk

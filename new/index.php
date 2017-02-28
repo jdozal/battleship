@@ -268,7 +268,7 @@ if (empty ( $deployment )) {
 
 $pid = $validate->printResponse ();
 if ($validate->valid) {
-	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ) );
+	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ), $strategy );
 	echo "PLAYER BOARD";
 	$validate->board->printGrid ();
 	echo "MACHINE BOARD";
