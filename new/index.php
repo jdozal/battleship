@@ -271,12 +271,11 @@ if ($validate->valid) {
 	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ) );
 	echo "PLAYER BOARD";
 	$validate->board->printGrid ();
-	$gameJSON = json_encode ( $newGame );
 	echo "MACHINE BOARD";
 	$newGame->boardMachine->printGrid ();
-	print_r ( $newGame );
-	print_r ( $gameJSON );
-	File::createFile ( $pid, $gameJSON );
+	print_r($newGame);
+	$baby = "baby";
+	$newGame->createFile($baby, json_encode($newGame));
 }
 ?>
 
