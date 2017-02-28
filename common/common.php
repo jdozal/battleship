@@ -13,11 +13,9 @@ class Ship {
 	public $numHits;
 	public $coordinates = [ ];
 	 
-	public function __construct($name, $x, $y, $orientation) {
+	public function __construct($name, $orientation) {
 		$this->name = $name;
 		$this->size = $this->setSize ();
-		array_push ( $this->coordinates, $x );
-		array_push ( $this->coordinates, $y );
 		$this->orientation = $orientation;
 	}
 
@@ -38,8 +36,8 @@ class Ship {
 			;
 	}
 	public function addCoordinates($x, $y) {
-		$this->coordinates [0] = $x;
-		$this->coordinates [1] = $y;
+		array_push($this->coordinates, $x);
+		array_push($this->coordinates, $y);
 	}
 
 }

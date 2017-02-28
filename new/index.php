@@ -31,7 +31,7 @@ class Validate {
 		foreach ( $deployArr as $shipInfo ) {
 			$this->shipInformation [] = explode ( ",", $shipInfo );
 		}
-		// print_r ( $this->shipInformation );
+		//print_r ( $this->shipInformation );
 	}
 	public function checkStrategy() {
 		if (empty ( $this->strategy )) {
@@ -84,15 +84,16 @@ class Validate {
 		
 		// Traverse array that contains ship information
 		foreach ( $this->shipInformation as $boat ) {
-			$currShip = new Ship ( $boat [0], (int)$boat [1], (int)$boat [2], $boat [3] );
+			$currShip = new Ship ( $boat [0], $boat [3] );
+           // $currShip->addCoordinates((int)$boat [1], (int)$boat [2]);
 			// Checks if ship name exists by checking size in the ship class
 			if ($currShip->size < 0) {
 				$this->reasons [] = 'Unknown ship name';
 				$this->valid = false;
 				continue;
 			}
-			$x = $currShip->coordinates [0] - 1;
-			$y = $currShip->coordinates [1] - 1;
+			$x = $boat[1] - 1;
+			$y = $boat[2] - 1;
 			// Check is position is outside of board
 			if ($x >= 10 || $x < 0 || $y >= 10 || $y < 0) {
 				$this->reasons [] = "Invalid ship position";
@@ -119,6 +120,7 @@ class Validate {
 						continue;
 					}
 					$this->board->grid [$y] [$x + $i] = $currShip->name [0];
+                    $currShip->addCoordinates($x+$i+1, $y+1);
 				}
 			}
 			
@@ -138,6 +140,7 @@ class Validate {
 						continue;
 					}
 					$this->board->grid [$y + $i] [$x] = $currShip->name [0];
+                    $currShip->addCoordinates($x+1, $y+$i+1);
 				}
 			}
 			$this->board->shipList = $this->shipArray;
@@ -172,11 +175,11 @@ class Validate {
 				S,
 				M 
 		);
-		$p1 = new Ship ( "Aircraft carrier", 1, 1, true );
-		$p2 = new Ship ( "Battleship", 1, 1, true );
-		$p3 = new Ship ( "Frigate", 1, 1, false );
-		$p4 = new Ship ( "Submarine", 1, 1, false );
-		$p5 = new Ship ( "Minesweeper", 1, 1, false );
+		$p1 = new Ship ( "Aircraft carrier", true );
+		$p2 = new Ship ( "Battleship", true );
+		$p3 = new Ship ( "Frigate", false );
+		$p4 = new Ship ( "Submarine", false );
+		$p5 = new Ship ( "Minesweeper", false );
 		$shipList = array (
 				$p1,
 				$p2,
@@ -216,8 +219,9 @@ class Validate {
 					for($j = 0; $j < $shipList [$count]->size; $j ++) {
 						// placing coordinates on board;
 						$ranBoard->grid [$y] [$x + $j] = $shipList [$count]->name [0];
+                        $shipList [$count]->addCoordinates ( $x + $j + 1, $y + 1 );
+
 					}
-					$shipList [$count]->addCoordinates ( $x + 1, $y + 1 );
 					$count ++;
 				}
 			}
@@ -241,8 +245,9 @@ class Validate {
 					for($j = 0; $j < $shipList [$count]->size; $j ++) {
 						// placing coordinates on board;
 						$ranBoard->grid [$y + $j] [$x] = $shipList [$count]->name [0];
+                        $shipList [$count]->addCoordinates ( $x + 1, $y + $j + 1 );
+
 					}
-					$shipList [$count]->addCoordinates ( $x + 1, $y + 1 );
 					$count ++;
 				}
 			}
@@ -273,11 +278,12 @@ $pid = $validate->printResponse ();
 if ($validate->valid) {
 	$newGame = new Game ( $pid, $validate->board, $validate->createRandomBoard ( 10 ), $strategy );
 	$newGame->createFile ( $pid, json_encode ( $newGame ) );
+    //print_r(json_encode($newGame));
 	//fwrite($pid,$game);
-	echo "<br/>MACHINE ";
-	$newGame->boardMachine->printGrid();
-	echo "<br/>PLAYER ";
-	$newGame->boardPlayer->printGrid();
+//	echo "<br/>MACHINE ";
+//	$newGame->boardMachine->printGrid();
+//	echo "<br/>PLAYER ";
+//	$newGame->boardPlayer->printGrid();
 }
 ?>
 

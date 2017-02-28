@@ -12,30 +12,30 @@ $game = json_decode ( fread ( $fileToRead, filesize ( "../writable/$pid.txt" ) )
 // get shot from url
 $shot = $_GET ['shot'];
 $shot = explode ( ",", $shot );
-$x = $shot [0];
-$y = $shot [1];
+$x = (int)$shot [0];
+$y = (int)$shot [1];
 
 // get strategy from game object
 $strategy = $game->strategy;
-echo $strategy."<br/>";
+//echo $strategy."<br/>";
 // save board from player and from machine
 $boardPlayer = $game->boardPlayer;
 $boardMachine = $game->boardMachine;
 
-echo "MACHINE BOARD<br/>";
-foreach ( $boardMachine->grid as $line ) {
-	foreach ( $line as $place ) {
-		echo $place;
-	}
-	echo "<br/>";
-}
-echo "PLAYER BOARD<br/>";
-foreach ( $boardPlayer->grid as $line ) {
-	foreach ( $line as $place ) {
-		echo $place;
-	}
-	echo "<br/>";
-}
+//echo "MACHINE BOARD<br/>";
+//foreach ( $boardMachine->grid as $line ) {
+//	foreach ( $line as $place ) {
+//		echo $place;
+//	}
+//	echo "<br/>";
+//}
+//echo "PLAYER BOARD<br/>";
+//foreach ( $boardPlayer->grid as $line ) {
+//	foreach ( $line as $place ) {
+//		echo $place;
+//	}
+//	echo "<br/>";
+//}
 
 $response = new Strategy ();
 // let player make shot
@@ -54,24 +54,25 @@ if ($response->ack_shot->isWin) {
 	}
 	print_r ( json_encode ( $response ) );
 }
-echo "<br/><br/>MACHINE BOARD<br/>";
-foreach ( $game ->boardMachine->grid as $line ) {
-	foreach ( $line as $place ) {
-		echo $place;
-	}
-	echo "<br/>";
-}
-echo "PLAYER BOARD<br/>";
-foreach ( $game ->boardPlayer->grid as $line ) {
-	foreach ( $line as $place ) {
-		echo $place;
-	}
-	echo "<br/>";
-}
-$game->boardMachine = $boardMachine;
-$game->boardPlayer = $boardPlayer;
+//echo "<br/><br/>MACHINE BOARD<br/>";
+//foreach ( $game ->boardMachine->grid as $line ) {
+//	foreach ( $line as $place ) {
+//		echo $place;
+//	}
+//	echo "<br/>";
+//}
+//echo "PLAYER BOARD<br/>";
+//foreach ( $game ->boardPlayer->grid as $line ) {
+//	foreach ( $line as $place ) {
+//		echo $place;
+//	}
+//	echo "<br/>";
+//}
 $game->isWin = ($response->ack_shot->isWin || $response->shot->isWin);
+if(!$game->isWin){
 $response->createFile($pid, json_encode($game));
+}
+
 
 class Strategy {
 	public $response = true;
@@ -137,22 +138,26 @@ class Strategy {
 	}
 	public function humanShoot($x, $y, $boardMachine) {
 		$gridValue = $boardMachine->grid [$y - 1] [$x - 1];
-		echo "value in board machine = " . $boardMachine->grid [$y - 1] [$x - 1];
+		//echo "value in board machine = " . $boardMachine->grid [$y - 1] [$x - 1];
 		if (($gridValue == '0') || ($gridValue == 'X')) {
 			$boardMachine->grid [$y - 1] [$x - 1] = 'X';
 			// response when shot is not significant
 			$this->ack_shot = $this->setShot ( $x, $y, false, false, false, [ ] );
 		} else {
 			$hitShip = $this->findShip ( $gridValue, $boardMachine );
-			print_r ( $hitShip );
+			//print_r ( $hitShip );
 			$isSunk = $hitShip->isSunk == 'true';
 			$isWin = $this->checkIfWin ( $boardMachine ) == 'true';
+            if(!empty($isSunk)) {
 			$this->ack_shot = $this->setShot ( $x, $y, true, $isSunk, $isWin, $hitShip->coordinates );
+            }else{
+                $this->ack_shot = $this->setShot ( $x, $y, true, $isSunk, $isWin, [] );
+            }
 			$boardMachine->grid [$y - 1] [$x - 1] = 'X';
 		}
 	}
 	public function SweepStrategy($boardPlayer) {
-		echo "SWEEP<br/>";
+		//echo "SWEEP<br/>";
 		for($x = 0; $x < count ( $boardPlayer->grid ); $x ++) {
 			for($y = 0; $y < count ( $boardPlayer->grid ); $y ++) {
 				$gridValue = $boardPlayer->grid [$y] [$x];
@@ -164,15 +169,19 @@ class Strategy {
 					continue;
 				} else {
 					$hitShip = $this->findShip ( $gridValue, $boardPlayer );
-					print_r ( $hitShip );
+					//print_r ( $hitShip );
 					$isSunk = $hitShip->isSunk == 'true';
 					$isWin = $this->checkIfWin ( $boardPlayer ) == 'true';
+                    if(!empty($isSunk)) {
 					$this->shot = $this->setShot ( $y + 1, $x + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+                    }else {
+                        $this->shot = $this->setShot ( $y + 1, $x + 1, true, $isSunk, $isWin, [] );
+                    }
 					$boardPlayer->grid [$y] [$x] = 'X';
 					return;
 				}
 			}
-			echo "<br/>";
+			//echo "<br/>";
 		}
 	}
 	public function RandomStrategy($boardPlayer) {
@@ -185,10 +194,14 @@ class Strategy {
 			$boardPlayer->grid [$y] [$x] = 'X';
 		} else {
 			$hitShip = $this->findShip ( $gridValue, $boardPlayer );
-			print_r ( $hitShip );
+			//print_r ( $hitShip );
 			$isSunk = $hitShip->isSunk == 'true';
 			$isWin = $this->checkIfWin ( $boardPlayer ) == 'true';
-			$this->shot = $this->setShot ( $x + 1, $y + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+            if(!empty($isSunk)) {
+			     $this->shot = $this->setShot ( $x + 1, $y + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+            } else {
+                $this->shot = $this->setShot ( $x + 1, $y + 1, true, $isSunk, $isWin, [] );
+            }
 			$boardPlayer->grid [$y] [$x] = 'X';
 		}
 	}
