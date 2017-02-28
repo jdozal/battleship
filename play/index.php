@@ -165,7 +165,7 @@ class Strategy {
 					$this->shot = $this->setShot ( $x + 1, $y + 1, false, false, false, [ ] );
 					$boardPlayer->grid [$y] [$x] = 'X';
 					return;
-				} elseif ($gridValue == 'X') {
+				} elseif (strcasecmp($gridValue, "X") == 0) {
 					continue;
 				} else {
 					$hitShip = $this->findShip ( $gridValue, $boardPlayer );
@@ -173,9 +173,9 @@ class Strategy {
 					$isSunk = $hitShip->isSunk == 'true';
 					$isWin = $this->checkIfWin ( $boardPlayer ) == 'true';
                     if(!empty($isSunk)) {
-					$this->shot = $this->setShot ( $y + 1, $x + 1, true, $isSunk, $isWin, $hitShip->coordinates );
+					$this->shot = $this->setShot ( $x + 1,$y + 1, true, $isSunk, $isWin, $hitShip->coordinates );
                     }else {
-                        $this->shot = $this->setShot ( $y + 1, $x + 1, true, $isSunk, $isWin, [] );
+                        $this->shot = $this->setShot ( $x + 1,$y + 1, true, $isSunk, $isWin, [] );
                     }
 					$boardPlayer->grid [$y] [$x] = 'X';
 					return;
@@ -189,7 +189,15 @@ class Strategy {
 		$y = rand ( 0, count ( $boardPlayer->grid ) - 1 );
 		$gridValue = $boardPlayer->grid [$y] [$x];
 		
-		if (($gridValue == '0') || ($gridValue == 'X')) {
+        /*if $gridValue has been previously shot
+        *Find another $x,$y and another $gridValue
+        */
+        while(strcasecmp($gridValue, "X") == 0){
+            $x = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+		    $y = rand ( 0, count ( $boardPlayer->grid ) - 1 );
+		    $gridValue = $boardPlayer->grid [$y] [$x];            
+        }
+		if ($gridValue == '0'){
 			$this->shot = $this->setShot ( $x + 1, $y + 1, false, false, false, [ ] );
 			$boardPlayer->grid [$y] [$x] = 'X';
 		} else {
