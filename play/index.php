@@ -32,7 +32,7 @@ if (strcasecmp ( $strategy, "Sweep" ) == 0) {
 	if (! ($sweepStrategy->checkIfWin ( $game->boardMachine ))) { // if the player's shot is not a win
 		$sweepStrategy->shootSweep ( $game->boardPlayer ); // then the server makes a shot on the player's board
 	}
-	//$sweepStrategy->printResponse();
+	$sweepStrategy->printResponse();
 	
 }
 
@@ -63,14 +63,6 @@ class Strategy {
 	public $shot;
 	public function __construct() {
 		$this->response = true;
-		$this->shot = array (
-				'x' => false,
-				'y' => false,
-				'isHit' => false,
-				'isSunk' => false,
-				'isWin' => false,
-				'ship' => false 
-		);
 		$this->ack_shot = array (
 				'x' => false,
 				'y' => false,
@@ -106,32 +98,31 @@ class Strategy {
 		echo 'isShip' . $this->ack_shot ['ship'];
 		echo "\n";
 	}
-	public function humanShoot($boardMachine, $x, $y) {
+	public function humanShoot($boardMachine, $y, $x) {
 		// echo "entered humanShoot method\n";
-		if (is_numeric ( $boardMachine->grid [$x] [$y] )) {
+		if (is_numeric ( $boardMachine->grid [$y] [$x] )) {
 			// echo "entered if-statement\n";
 			// echo $boardMachine->grid [$x] [$y];
 			// echo 'is numeric and there is no ship here\n';
 			$ship = null;
-			$this->setShotInfo ( $x, $y, $ship, $boardMachine );
+			$this->setShotInfo ( $y, $x, $ship, $boardMachine );
 			// echo "Printing shot info\n";
-			//$this->printResponse ();
 			
-			$boardMachine->grid [$x] [$y] = 'X';
+			$boardMachine->grid [$y] [$x] = 'X';
 			// echo $boardMachine->grid [$x] [$y] = 'X';
 			// echo "there's a ship at $x,$y and it's $boardMachine->grid[$x] [$y]\n";
-		} else if (! is_numeric ( $boardMachine->grid [$x] [$y] ) && $boardMachine->grid [$x] [$y] != 'X') {
+		} else if (! is_numeric ( $boardMachine->grid [$y] [$x] ) && $boardMachine->grid [$y] [$x] != 'X') {
 			// echo "entered else-if statement\n";
 			// echo $boardMachine->grid [$x] [$y];
 			// echo "is not numeric and there is a ship here\n";
-			$ship = $this->findShip ( $boardMachine->grid [$x] [$y], $boardMachine );
+			$ship = $this->findShip ( $boardMachine->grid [$y] [$x], $boardMachine );
 			// echo "parameters for ack_shot";
 			// echo $x . "\n";
 			// echo $y . "\n";
-			$this->set_ack_ShotInfo ( $x, $y, $ship, $boardMachine );
+			$this->set_ack_ShotInfo ( $y, $x, $ship, $boardMachine );
 			// echo "After set_ack_shotInfo\n";
-			$this->printResponse ();
 		}
+		$this->printResponse ();
 	}
 	public function findShip($initial, $board) {
 		/*
@@ -205,14 +196,6 @@ class SweepStrategy extends Strategy {
 				'isWin' => false,
 				'ship' => false
 		);
-		$this->ack_shot = array (
-				'x' => false,
-				'y' => false,
-				'isHit' => false,
-				'isSunk' => false,
-				'isWin' => false,
-				'ship' => false
-		);
 	}
 	// boardPlayer is beting hit (the server is hitting the human's board)
 	public function shootSweep($boardPlayer) {
@@ -240,7 +223,7 @@ class SweepStrategy extends Strategy {
 					                                                                            // $ship->printShipInfo ();
 					$this->setShotInfo ( $row, $col, $ship, $boardPlayer );
 					// echo "printing shot info\n";
-					// $this->printShotInfo ();
+					$this->printShotInfo ();
 				}
 			}
 		}
