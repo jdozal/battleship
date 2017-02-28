@@ -56,26 +56,28 @@ if(strcasecmp($strategy, "Smart") == 0) {
  * "ship:", []}}
  */
 class Strategy {
-	public $shot;
-	public $ack_shot;
+	
 	public $response;
+	public $ack_shot;
+	public $shot;
+	
 	public function __construct() {
 		$this->response = true;
 		$this->shot = array (
-				'x' => '0',
-				'y' => '0',
-				'isHit' => '0',
-				'isSunk' => '0',
-				'isWin' => '0',
-				'ship' => '0'
+				'x' => false,
+				'y' => false,
+				'isHit' => false,
+				'isSunk' => false,
+				'isWin' => false,
+				'ship' => false
 		);
 		$this->ack_shot = array (
-				'x' => '0',
-				'y' => '0',
-				'isHit' => '0',
-				'isSunk' => '0',
-				'isWin' => '0',
-				'ship' => '0'
+				'x' => false,
+				'y' => false,
+				'isHit' => false,
+				'isSunk' => false,
+				'isWin' => false,
+				'ship' => false
 		);
 	}
 	
