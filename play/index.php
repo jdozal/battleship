@@ -30,7 +30,7 @@ if(strcasecmp($strategy, "Sweep") == 0) {
 	$sweepStrategy = new SweepStrategy ();
 	$sweepStrategy->humanShoot($game->boardMachine, $shot[0], $shot[1]);
 	if(!($sweepStrategy->checkIfWin($game->boardMachine))){//if the player's shot is not a win
-		$sweepStrategy->shootRandom($game->boardPlayer); //then the server makes a shot on the player's board
+		$sweepStrategy->shootSweep($game->boardPlayer); //then the server makes a shot on the player's board
 	}
 }
 
